@@ -18,7 +18,6 @@ results/
   results.csv          raw averaged measurements
   results.md           the same results as markdown tables
 run.sh                 compile + run tests and/or benchmark
-REPORT.md              one-page explanation of the algorithm + complexity
 ```
 
 A one-page explanation of how the algorithm works (trie, construction of failure links, finding several patterns
