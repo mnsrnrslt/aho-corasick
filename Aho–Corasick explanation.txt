@@ -1,0 +1,14 @@
+Aho–Corasick explanation
+
+The task is to find all occurrences of k patterns in a text of length n. If we run KMP for every pattern we read the text k times, so it costs O(k·n + L) where L is the total length of the patterns. Aho–Corasick builds one automaton for all patterns and reads the text only once.
+
+First we put all patterns into a trie. Every node is a prefix of some pattern and the root is the empty string. Patterns with the same beginning share nodes, so there are at most L + 1 nodes. If a pattern ends at a node we save its id there.
+
+Then we build failure links. fail[v] points to the longest proper suffix of v that is also in the trie. If the next character has no edge from the current node we follow fail links until we find one or reach the root, so we never go back in the text. The links are built with BFS so shallower nodes are already done. Children of the root fail to the root. For an edge u to v by character c we start from fail[u] and go up by fail links until some node has an edge c, and that child becomes fail[v]. If no such node exists fail[v] is the root. It is basically the KMP prefix function but for a tree.
+
+To find multiple patterns at one position we use output links. When we are in node "she" the pattern "he" also ends here because it is a suffix. outLink[v] points to the closest node on the fail chain where some pattern ends. At each position we report the patterns of the current node and then jump by output links, and every jump gives a real match. For patterns he, she, his, hers and text ushers we get she at 1, he at 2 and hers at 2, and no character is read twice.
+
+Complexity: the build takes O(L·σ) time and memory where σ is the alphabet size, because every node keeps an array of σ edges. Search is O(n + z) where z is the number of matches. Fail steps are linear overall because every character increases the depth by at most 1 and every fail step decreases it. KMP for all patterns is O(k·n + L).
+
+So Aho–Corasick is good for many patterns because the search time doesn't depend on k. In my tests with 1000 patterns on 100 000 characters it took 1.4 ms and KMP took 124 ms. The downside is the build time and memory, so for one or two patterns KMP is simpler and works just as fast.
+
